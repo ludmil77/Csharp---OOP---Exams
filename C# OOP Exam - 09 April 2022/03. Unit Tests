@@ -1,0 +1,130 @@
+using NUnit.Framework;
+using NUnit.Framework.Internal;
+using System;
+
+namespace SmartphoneShop.Tests
+{
+    [TestFixture]
+    public class SmartphoneShopTests
+    {
+        [SetUp]
+
+        public void SetUp()
+        {
+
+        }
+        [Test]
+        public void SmartphoneConstructorShouldInitializeCorrectly()
+        {
+            Smartphone smartphone = new Smartphone("Moto", 100);
+            Assert.AreEqual("Moto", smartphone.ModelName);
+            Assert.AreEqual(100, smartphone.CurrentBateryCharge);
+            Assert.AreEqual(100, smartphone.MaximumBatteryCharge);
+        }
+        [Test]
+
+        public void ShopConstructorShouldInitializeCorrectly()
+        {
+            Shop shop = new Shop(3);
+            Assert.AreEqual(3, shop.Capacity);
+            Assert.AreEqual(0, shop.Count);
+            
+        }
+        [Test]
+
+        public void ShopConstructorShouldThrowCapacityException()
+        {
+            Shop shop = null;
+            Assert.Throws<ArgumentException>(() => shop = new Shop(-1), "Invalid capacity.");
+        }
+        [Test]
+
+        public void AddShouldThrowExistingSmartException()
+        {
+            Shop shop = new Shop(3);
+            Smartphone smartphone = new Smartphone("Moto", 100);
+            shop.Add(smartphone);
+            Assert.Throws<InvalidOperationException>(() => shop.Add(smartphone), "The phone model Moto already exist.");
+        }
+        [Test]
+
+        public void RemoveShouldThrowFullCapacityException()
+        {
+            Shop shop = new Shop(1);
+            Smartphone smartphone1 = new Smartphone("Moto", 100);
+            Smartphone smartphone2 = new Smartphone("Nokia", 150);
+            shop.Add(smartphone1);
+            Assert.Throws<InvalidOperationException>(() => shop.Add(smartphone2), "The shop is full.");
+        }
+        [Test]
+
+        public void RemoveShouldThrowInexistingSmartExveption()
+        {
+            Shop shop = new Shop(1);
+            Smartphone smartphone1 = new Smartphone("Moto", 100);
+            Smartphone smartphone2 = new Smartphone("Nokia", 150);
+            shop.Add(smartphone1);
+            Assert.Throws<InvalidOperationException>(() => shop.Remove("Nokia"), "The phone model Nokia doesn't exist.");
+        }
+        [Test]
+
+        public void RemoveShouldWorkingCorrectly()
+        {
+            Shop shop = new Shop(3);
+            Smartphone smartphone1 = new Smartphone("Moto", 100);
+            Smartphone smartphone2 = new Smartphone("Nokia", 150);
+            shop.Add(smartphone1);
+            shop.Add(smartphone2);
+            shop.Remove("Nokia");
+            Assert.AreEqual(1, shop.Count);
+        }
+        [Test]
+
+        public void TestPhoneShouldThrowInexistingSmartException()
+        {
+            Shop shop = new Shop(3);
+            Smartphone smartphone1 = new Smartphone("Moto", 100);
+            shop.Add(smartphone1);
+            Assert.Throws<InvalidOperationException>(() => shop.TestPhone("Nokia", 150), "The phone model Nokia doesn't exist.");
+        }
+        [Test]
+        public void TestPhoneShouldThrowBatteryChargeException()
+        {
+            Shop shop = new Shop(3);
+            Smartphone smartphone1 = new Smartphone("Moto", 100);
+            shop.Add(smartphone1);
+            Assert.Throws<InvalidOperationException>(() => shop.TestPhone("Moto", 101), "The phone model Moto is low on batery.");
+        }
+        [Test]
+
+        public void TestPhoneShouldWorkingCorrectly()
+        {
+            Shop shop = new Shop(3);
+            Smartphone smartphone1 = new Smartphone("Moto", 100);
+            shop.Add(smartphone1);
+            shop.TestPhone("Moto", 100);
+            Assert.AreEqual(0, smartphone1.CurrentBateryCharge);
+        }
+        [Test]
+
+        public void ChargePhoneShouldThrowInexistingSmartException()
+        {
+            Shop shop = new Shop(3);
+            Smartphone smartphone1 = new Smartphone("Moto", 100);
+            shop.Add(smartphone1);
+            Assert.Throws<InvalidOperationException>(() => shop.ChargePhone("Nokia"), "The phone model Nokia doesn't exist.");
+        }
+        [Test]
+
+        public void ChargePhoneShouldWorkingCorrectly()
+        {
+            Shop shop = new Shop(3);
+            Smartphone smartphone1 = new Smartphone("Moto", 100);
+            shop.Add(smartphone1);
+            shop.TestPhone("Moto", 99);
+            shop.ChargePhone("Moto");
+            
+            Assert.AreEqual(100, smartphone1.CurrentBateryCharge);
+        }
+    }
+}
